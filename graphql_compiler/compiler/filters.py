@@ -2,7 +2,7 @@
 from functools import partial, wraps
 
 from graphql import GraphQLInt, GraphQLList, GraphQLScalarType, GraphQLString, GraphQLUnionType
-from graphql.language.ast import InlineFragment, ListValue
+from graphql.language.ast import InlineFragmentNode, ListValueNode
 from graphql.type.definition import is_leaf_type
 
 from . import blocks, expressions
@@ -235,7 +235,7 @@ def _process_has_edge_degree_filter_directive(filter_operation_info, location, c
     Returns:
         a Filter basic block that performs the check
     """
-    if isinstance(filter_operation_info.field_ast, InlineFragment):
+    if isinstance(filter_operation_info.field_ast, InlineFragmentNode):
         raise AssertionError(u'Received InlineFragment AST node in "has_edge_degree" filter '
                              u'handler. This should have been caught earlier: '
                              u'{}'.format(filter_operation_info.field_ast))
@@ -740,7 +740,7 @@ def _get_filter_op_name_and_values(directive):
 
     # HACK(predrag): Workaround for graphql-core validation issue
     #                https://github.com/graphql-python/graphql-core/issues/97
-    if not isinstance(args['value'].value, ListValue):
+    if not isinstance(args['value'].value, ListValueNode):
         raise GraphQLValidationError(u'Filter directive value was not a list: {}'.format(directive))
 
     op_name = args['op_name'].value.value

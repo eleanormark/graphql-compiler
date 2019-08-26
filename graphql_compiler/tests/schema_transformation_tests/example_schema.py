@@ -127,7 +127,7 @@ def _get_type_equivalence_hints(schema_id_to_ast, type_equivalence_hints_names):
     name_to_type = {}
     for ast in six.itervalues(schema_id_to_ast):
         schema = build_ast_schema(ast)
-        name_to_type.update(schema.get_type_map())
+        name_to_type.update(schema.type_map)
     type_equivalence_hints = {}
     for object_type_name, union_type_name in six.iteritems(type_equivalence_hints_names):
         object_type = name_to_type[object_type_name]
@@ -251,13 +251,13 @@ schema {
 type Animal {
   uuid: String
   name: String
-  out_Animal_Creature: Creature @stitch(sink_field: "id", source_field: "uuid")
+  out_Animal_Creature: Creature
 }
 
 type Creature {
   id: String
   age: Int
-  in_Animal_Creature: Animal @stitch(sink_field: "uuid", source_field: "id")
+  in_Animal_Creature: Animal
 }
 
 type SchemaQuery {

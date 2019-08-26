@@ -463,7 +463,7 @@ class GraphqlSchemaGenerationTests(unittest.TestCase):
         }
 
         graphql_schema, _ = get_graphql_schema_from_orientdb_schema_data(schema_data)
-        for name in six.iterkeys(graphql_schema.get_type_map()):
+        for name in six.iterkeys(graphql_schema.type_map):
             self.assertNotIn(name, names_of_non_graph_classes_to_ignore)
 
         non_graph_class_type = graphql_schema.get_type(

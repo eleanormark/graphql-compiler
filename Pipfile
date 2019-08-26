@@ -35,7 +35,7 @@ snapshottest = ">=0.5.1,<1"
 [packages]
 arrow = ">=0.10.0,<1"
 funcy = ">=1.7.3,<2"
-graphql-core = ">=2.1,<3"
+graphql-core = "==3.0.0a1"
 pytz = ">=2017.2"
 six = ">=1.10.0"
 sqlalchemy = ">=1.3.0,<2"

@@ -3,7 +3,7 @@ import string
 import unittest
 
 from graphql import parse
-from graphql.utils.build_ast_schema import build_ast_schema
+from graphql.utilities.build_ast_schema import build_ast_schema
 import six
 
 from ..compiler.compiler_frontend import graphql_to_ir

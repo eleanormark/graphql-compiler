@@ -24,11 +24,11 @@ FilterDirective = GraphQLDirective(
     name='filter',
     args=OrderedDict([(
         'op_name', GraphQLArgument(
-            type=GraphQLNonNull(GraphQLString),
+            type_=GraphQLNonNull(GraphQLString),
             description='Name of the filter operation to perform.',
         )),
         ('value', GraphQLArgument(
-            type=GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
+            type_=GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
             description='List of string operands for the operator.',
         ))]
     ),
@@ -48,7 +48,7 @@ TagDirective = GraphQLDirective(
     name='tag',
     args=OrderedDict([
         ('tag_name', GraphQLArgument(
-            type=GraphQLNonNull(GraphQLString),
+            type_=GraphQLNonNull(GraphQLString),
             description='Name to apply to the given property field.',
         )),
     ]),
@@ -66,7 +66,7 @@ OutputDirective = GraphQLDirective(
     name='output',
     args=OrderedDict([
         ('out_name', GraphQLArgument(
-            type=GraphQLNonNull(GraphQLString),
+            type_=GraphQLNonNull(GraphQLString),
             description='What to designate the output field generated from this property field.',
         )),
     ]),
@@ -183,7 +183,7 @@ RecurseDirective = GraphQLDirective(
     name='recurse',
     args=OrderedDict([
         ('depth', GraphQLArgument(
-            type=GraphQLNonNull(GraphQLInt),
+            type_=GraphQLNonNull(GraphQLInt),
             description='Recurse up to this many times on this edge. A depth of 1 produces '
                         'the current vertex and its immediate neighbors along the given edge.',
         )),
@@ -338,9 +338,9 @@ def insert_meta_fields_into_existing_schema(graphql_schema):
         graphql_schema: GraphQLSchema object describing the schema that is going to be used with
                         the compiler. N.B.: MUTATED IN-PLACE in this method.
     """
-    root_type_name = graphql_schema.get_query_type().name
+    root_type_name = graphql_schema.query_type.name
 
-    for type_name, type_obj in six.iteritems(graphql_schema.get_type_map()):
+    for type_name, type_obj in six.iteritems(graphql_schema.type_map):
         if type_name.startswith('__') or type_name == root_type_name:
             # Ignore the types that are built into GraphQL itself, as well as the root query type.
             continue

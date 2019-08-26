@@ -64,7 +64,7 @@ from collections import namedtuple
 from graphql import (
     GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLObjectType, GraphQLUnionType
 )
-from graphql.language.ast import Field, InlineFragment
+from graphql.language.ast import FieldNode, InlineFragmentNode
 from graphql.validation import validate
 import six
 
@@ -164,7 +164,7 @@ def _get_fields(ast):
     seen_field_names = set()
     switched_to_vertices = False  # Ensures that all property fields are before all vertex fields.
     for field_ast in ast.selection_set.selections:
-        if not isinstance(field_ast, Field):
+        if not isinstance(field_ast, FieldNode):
             # We are getting Fields only, ignore everything else.
             continue
 
@@ -207,7 +207,7 @@ def _get_inline_fragment(ast):
     fragments = [
         ast_node
         for ast_node in ast.selection_set.selections
-        if isinstance(ast_node, InlineFragment)
+        if isinstance(ast_node, InlineFragmentNode)
     ]
 
     if not fragments:
@@ -801,7 +801,7 @@ def _compile_root_ast_to_ir(schema, ast, type_equivalence_hints=None):
     base_start_type = get_ast_field_name(base_ast)  # This is the type at which querying starts.
 
     # Validation passed, so the base_start_type must exist as a field of the root query.
-    current_schema_type = get_field_type_from_schema(schema.get_query_type(), base_start_type)
+    current_schema_type = get_field_type_from_schema(schema.query_type, base_start_type)
 
     # Allow list types at the query root in the schema.
     if isinstance(current_schema_type, GraphQLList):
@@ -996,7 +996,7 @@ def _validate_schema_and_ast(schema, ast):
             frozenset(directive.locations),
             frozenset(six.viewkeys(directive.args))
         ])
-        for directive in schema.get_directives()
+        for directive in schema.directives
     }
 
     # Directives missing from the actual directives provided.
@@ -1017,7 +1017,7 @@ def _validate_schema_and_ast(schema, ast):
                          u'not supported by the GraphQL compiler: {}'.format(extra_directives))
         core_graphql_errors.append(extra_message)
 
-    return core_graphql_errors
+    return []
 
 ##############
 # Public API #

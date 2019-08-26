@@ -133,21 +133,21 @@ def _get_basic_schema_ast(query_type):
     Returns:
         Document, representing a nearly blank schema
     """
-    blank_ast = ast_types.Document(
+    blank_ast = ast_types.DocumentNode(
         definitions=[
-            ast_types.SchemaDefinition(
+            ast_types.SchemaDefinitionNode(
                 operation_types=[
-                    ast_types.OperationTypeDefinition(
+                    ast_types.OperationTypeDefinitionNode(
                         operation='query',
-                        type=ast_types.NamedType(
-                            name=ast_types.Name(value=query_type)
+                        type=ast_types.NamedTypeNode(
+                            name=ast_types.NameNode(value=query_type)
                         ),
                     )
                 ],
                 directives=[],
             ),
-            ast_types.ObjectTypeDefinition(
-                name=ast_types.Name(value=query_type),
+            ast_types.ObjectTypeDefinitionNode(
+                name=ast_types.NameNode(value=query_type),
                 fields=[],
                 interfaces=[],
                 directives=[],
@@ -201,26 +201,26 @@ def _accumulate_types(merged_schema_ast, merged_query_type_name, type_name_to_sc
     new_query_type_fields = None  # List[FieldDefinition]
 
     for new_definition in new_definitions:
-        if isinstance(new_definition, ast_types.SchemaDefinition):
+        if isinstance(new_definition, ast_types.SchemaDefinitionNode):
             continue
         elif (
-            isinstance(new_definition, ast_types.ObjectTypeDefinition) and
+            isinstance(new_definition, ast_types.ObjectTypeDefinitionNode) and
             new_definition.name.value == current_query_type
         ):  # query type definition
             new_query_type_fields = new_definition.fields  # List[FieldDefinition]
-        elif isinstance(new_definition, ast_types.DirectiveDefinition):
+        elif isinstance(new_definition, ast_types.DirectiveDefinitionNode):
             _process_directive_definition(
                 new_definition, directives, merged_schema_ast
             )
-        elif isinstance(new_definition, ast_types.ScalarTypeDefinition):
+        elif isinstance(new_definition, ast_types.ScalarTypeDefinitionNode):
             _process_scalar_definition(
                 new_definition, scalars, type_name_to_schema_id, merged_schema_ast
             )
         elif isinstance(new_definition, (
-            ast_types.EnumTypeDefinition,
-            ast_types.InterfaceTypeDefinition,
-            ast_types.ObjectTypeDefinition,
-            ast_types.UnionTypeDefinition,
+            ast_types.EnumTypeDefinitionNode,
+            ast_types.InterfaceTypeDefinitionNode,
+            ast_types.ObjectTypeDefinitionNode,
+            ast_types.UnionTypeDefinitionNode,
         )):
             _process_generic_type_definition(
                 new_definition, current_schema_id, scalars, type_name_to_schema_id,
@@ -399,17 +399,17 @@ def _add_cross_schema_edges(schema_ast, type_name_to_schema_id, scalars, cross_s
 
     for definition in schema_ast.definitions:
         if (
-            isinstance(definition, ast_types.ObjectTypeDefinition) and
+            isinstance(definition, ast_types.ObjectTypeDefinitionNode) and
             definition.name.value == query_type
         ):  # query type definition
             continue
         if isinstance(definition, (
-            ast_types.InterfaceTypeDefinition,
-            ast_types.ObjectTypeDefinition,
+            ast_types.InterfaceTypeDefinitionNode,
+            ast_types.ObjectTypeDefinitionNode,
         )):
             type_name_to_definition[definition.name.value] = definition
         elif isinstance(definition, (
-            ast_types.UnionTypeDefinition,
+            ast_types.UnionTypeDefinitionNode,
         )):
             union_type_names.add(definition.name.value)
 
@@ -601,14 +601,14 @@ def _check_field_types_are_matching_scalars(type_name_to_definition, scalars, cr
             raise AssertionError(u'Unreachable code reached. Field "{}" unexpectedly '
                                  u'not found.'.format(field_name))
 
-        if isinstance(field_type, ast_types.ListType):
+        if isinstance(field_type, ast_types.ListTypeNode):
             raise InvalidCrossSchemaEdgeError(
                 u'The {}bound field of cross-schema edge "{}" gives a list, while it '
                 u'should be a single scalar'.format(
                     direction, cross_schema_edge
                 )
             )
-        elif isinstance(field_type, ast_types.NamedType):
+        elif isinstance(field_type, ast_types.NamedTypeNode):
             if field_type.name.value not in scalars:
                 raise InvalidCrossSchemaEdgeError(
                     u'The {}bound field of cross-schema edge "{}" is of type "{}", which '
@@ -698,17 +698,14 @@ def _add_edge_field(source_type_node, sink_type_name, source_field_name, sink_fi
             )
         )
 
-    new_edge_field_node = ast_types.FieldDefinition(
-        name=ast_types.Name(value=new_edge_field_name),
+    new_edge_field_node = ast_types.FieldDefinitionNode(
+        name=ast_types.NameNode(value=new_edge_field_name),
         arguments=[],
-        type=ast_types.ListType(
-            type=ast_types.NamedType(
-                name=ast_types.Name(value=sink_type_name),
+        type=ast_types.ListTypeNode(
+            type=ast_types.NamedTypeNode(
+                name=ast_types.NameNode(value=sink_type_name),
             ),
         ),
-        directives=[
-            _build_stitch_directive(source_field_name, sink_field_name),
-        ],
     )
 
     type_fields.append(new_edge_field_node)
@@ -716,16 +713,16 @@ def _add_edge_field(source_type_node, sink_type_name, source_field_name, sink_fi
 
 def _build_stitch_directive(source_field_name, sink_field_name):
     """Build a Directive node for the stitch directive."""
-    return ast_types.Directive(
-        name=ast_types.Name(value='stitch'),
+    return ast_types.DirectiveNode(
+        name=ast_types.NameNode(value='stitch'),
         arguments=[
-            ast_types.Argument(
-                name=ast_types.Name(value='source_field'),
-                value=ast_types.StringValue(value=source_field_name),
+            ast_types.ArgumentNode(
+                name=ast_types.NameNode(value='source_field'),
+                value=ast_types.StringValueNode(value=source_field_name),
             ),
-            ast_types.Argument(
-                name=ast_types.Name(value='sink_field'),
-                value=ast_types.StringValue(value=sink_field_name),
+            ast_types.ArgumentNode(
+                name=ast_types.NameNode(value='sink_field'),
+                value=ast_types.StringValueNode(value=sink_field_name),
             ),
         ],
     )

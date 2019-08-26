@@ -7,7 +7,7 @@ from graphql.type import (
     GraphQLField, GraphQLInterfaceType, GraphQLList, GraphQLObjectType, GraphQLScalarType,
     GraphQLSchema, GraphQLUnionType
 )
-from graphql.utils.assert_valid_name import COMPILED_NAME_PATTERN
+from graphql.utilities.assert_valid_name import assert_valid_name, GraphQLError
 import six
 
 from ..compiler.helpers import strip_non_null_from_type
@@ -86,12 +86,12 @@ def _get_fields_for_class(schema_graph, graphql_types, field_type_overrides, hid
     # Add leaf GraphQL fields (class properties).
     all_properties = {}
     for property_name, property_obj in six.iteritems(properties):
-        if COMPILED_NAME_PATTERN.match(property_name):
+        try:
+            assert_valid_name(property_name)
             all_properties[property_name] = property_obj.type
-        else:
+        except GraphQLError:
             warnings.warn(u'Ignoring property {} of class {} with invalid name. '
-                          u'Property names must match /{}/.'
-                          .format(property_name, cls_name, COMPILED_NAME_PATTERN))
+                          .format(property_name, cls_name))
 
     collections_of_non_graphql_scalars = {
         property_name

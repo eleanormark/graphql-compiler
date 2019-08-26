@@ -6,7 +6,7 @@ import re
 
 from graphql import GraphQLList, parse
 from graphql.type.definition import GraphQLInterfaceType, GraphQLObjectType
-from graphql.utils.build_ast_schema import build_ast_schema
+from graphql.utilities.build_ast_schema import build_ast_schema
 import six
 import sqlalchemy
 from sqlalchemy.dialects import mssql
@@ -54,7 +54,7 @@ SCHEMA_TEXT = '''
 
     directive @fold on FIELD
 
-    type Animal implements Entity, UniquelyIdentifiable {
+    type Animal implements Entity & UniquelyIdentifiable {
         _x_count: Int
         alias: [String]
         birthday: Date
@@ -74,7 +74,7 @@ SCHEMA_TEXT = '''
         uuid: ID
     }
 
-    type BirthEvent implements Entity, UniquelyIdentifiable {
+    type BirthEvent implements Entity & UniquelyIdentifiable {
         _x_count: Int
         alias: [String]
         description: String
@@ -105,7 +105,7 @@ SCHEMA_TEXT = '''
         uuid: ID
     }
 
-    type Event implements Entity, UniquelyIdentifiable {
+    type Event implements Entity & UniquelyIdentifiable {
         _x_count: Int
         alias: [String]
         description: String
@@ -119,7 +119,7 @@ SCHEMA_TEXT = '''
         uuid: ID
     }
 
-    type FeedingEvent implements Entity, UniquelyIdentifiable {
+    type FeedingEvent implements Entity & UniquelyIdentifiable {
         _x_count: Int
         alias: [String]
         description: String
@@ -134,7 +134,7 @@ SCHEMA_TEXT = '''
         uuid: ID
     }
 
-    type Food implements Entity, UniquelyIdentifiable {
+    type Food implements Entity & UniquelyIdentifiable {
         _x_count: Int
         alias: [String]
         description: String
@@ -145,7 +145,7 @@ SCHEMA_TEXT = '''
         uuid: ID
     }
 
-    type FoodOrSpecies implements Entity, UniquelyIdentifiable {
+    type FoodOrSpecies implements Entity & UniquelyIdentifiable {
         _x_count: Int
         alias: [String]
         description: String
@@ -156,7 +156,7 @@ SCHEMA_TEXT = '''
         uuid: ID
     }
 
-    type Location implements Entity, UniquelyIdentifiable {
+    type Location implements Entity & UniquelyIdentifiable {
         _x_count: Int
         alias: [String]
         description: String
@@ -180,7 +180,7 @@ SCHEMA_TEXT = '''
         UniquelyIdentifiable: [UniquelyIdentifiable]
     }
 
-    type Species implements Entity, UniquelyIdentifiable {
+    type Species implements Entity & UniquelyIdentifiable {
         _x_count: Int
         alias: [String]
         description: String
@@ -340,7 +340,7 @@ def _get_schema_without_list_valued_property_fields():
     schema = get_schema()
 
     types_with_fields = (GraphQLInterfaceType, GraphQLObjectType)
-    for type_name, graphql_type in six.iteritems(schema.get_type_map()):
+    for type_name, graphql_type in six.iteritems(schema.type_map):
         if isinstance(graphql_type, types_with_fields):
             if type_name != 'RootSchemaQuery' and not type_name.startswith('__'):
                 fields_to_pop = []

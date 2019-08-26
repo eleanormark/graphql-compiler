@@ -69,7 +69,7 @@ DIRECTIVES_ALLOWED_IN_MACRO_EDGE_DEFINITION = frozenset({
 def get_schema_for_macro_edge_definitions(querying_schema):
     """Given a schema object used for querying, create a schema used for macro edge definitions."""
     new_directives = list(chain(
-        querying_schema.get_directives(), DIRECTIVES_REQUIRED_IN_MACRO_EDGE_DEFINITION))
+        querying_schema.directives, DIRECTIVES_REQUIRED_IN_MACRO_EDGE_DEFINITION))
 
     # Unfortunately, GraphQLSchema objects do not easily allow creating derived schemas,
     # since the GraphQLSchema constructor takes a "types" parameter whose value is not preserved
