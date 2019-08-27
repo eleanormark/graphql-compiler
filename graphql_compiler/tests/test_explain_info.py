@@ -21,7 +21,7 @@ class ExplainInfoTests(unittest.TestCase):
     def compare_output_info(self, expected, received):
         """Compare two OutputInfo objects, using proper GraphQL type comparison operators."""
         self.assertEqual(expected.location, received.location)
-        self.assertTrue((expected.type).is_same_type(received.type))
+        is_equal_type(self.assertTrue((expected.type), received.type))
         self.assertEqual(expected.optional, received.optional)
 
     def check(self, graphql_test, expected_filters, expected_recurses, expected_outputs):

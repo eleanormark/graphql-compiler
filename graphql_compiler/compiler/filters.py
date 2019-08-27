@@ -106,7 +106,7 @@ def _represent_argument(directive_location, context, argument, inferred_type):
         # in order to possibly raise an error with a better explanation.
         validate_runtime_argument_name(argument_name)
         existing_type = context['inputs'].get(argument_name, inferred_type)
-        if not inferred_type.is_same_type(existing_type):
+        if not is_equal_type(inferred_type, existing_type):
             raise GraphQLCompilationError(u'Incompatible types inferred for argument {}. '
                                           u'The argument cannot simultaneously be '
                                           u'{} and {}.'.format(argument, existing_type,
@@ -132,7 +132,7 @@ def _represent_argument(directive_location, context, argument, inferred_type):
         if location.field is None:
             raise AssertionError(u'Argument location is not a property field: {}'.format(location))
 
-        if not inferred_type.is_same_type(tag_inferred_type):
+        if not is_equal_type(inferred_type, tag_inferred_type):
             raise GraphQLCompilationError(u'The inferred type of the matching @tag directive does '
                                           u'not match the inferred required type for this filter: '
                                           u'{} vs {}'.format(tag_inferred_type, inferred_type))
@@ -527,7 +527,7 @@ def _process_has_substring_filter_directive(filter_operation_info, location, con
     filtered_field_type = filter_operation_info.field_type
     filtered_field_name = filter_operation_info.field_name
 
-    if not strip_non_null_from_type(filtered_field_type).is_same_type(GraphQLString):
+    if not is_equal_type(strip_non_null_from_type(filtered_field_type), GraphQLString):
         raise GraphQLCompilationError(u'Cannot apply "has_substring" to non-string '
                                       u'type {}'.format(filtered_field_type))
     argument_inferred_type = GraphQLString
@@ -569,7 +569,7 @@ def _process_ends_with_filter_directive(filter_operation_info, location, context
     filtered_field_type = filter_operation_info.field_type
     filtered_field_name = filter_operation_info.field_name
 
-    if not strip_non_null_from_type(filtered_field_type).is_same_type(GraphQLString):
+    if not is_equal_type(strip_non_null_from_type(filtered_field_type), GraphQLString):
         raise GraphQLCompilationError(u'Cannot apply "ends_with" to non-string '
                                       u'type {}'.format(filtered_field_type))
     argument_inferred_type = GraphQLString
@@ -611,7 +611,7 @@ def _process_starts_with_filter_directive(filter_operation_info, location, conte
     filtered_field_type = filter_operation_info.field_type
     filtered_field_name = filter_operation_info.field_name
 
-    if not strip_non_null_from_type(filtered_field_type).is_same_type(GraphQLString):
+    if not is_equal_type(strip_non_null_from_type(filtered_field_type), GraphQLString):
         raise GraphQLCompilationError(u'Cannot apply "starts_with" to non-string '
                                       u'type {}'.format(filtered_field_type))
     argument_inferred_type = GraphQLString
@@ -654,7 +654,7 @@ def _process_contains_filter_directive(filter_operation_info, location, context,
 
     base_field_type = strip_non_null_from_type(filtered_field_type)
 
-    if base_field_type.is_same_type(GraphQLString):
+    if is_equal_type(base_field_type, GraphQLString):
         raise GraphQLCompilationError(u'Cannot apply "contains" to non-list '
                                       u'type String. Consider using the "has_substring" '
                                       u'operator instead.')

@@ -301,7 +301,7 @@ def compare_input_metadata(test_case, expected, received):
         expected_value = expected[key]
         received_value = received[key]
 
-        test_case.assertTrue(expected_value.is_same_type(received_value),
+        is_equal_type(test_case.assertTrue(expected_value, received_value),
                              msg=u'{} != {}'.format(str(expected_value), str(received_value)))
 
 

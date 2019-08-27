@@ -124,7 +124,7 @@ class OutputMetadata(namedtuple('OutputMetadata', ('type', 'optional'))):
         """Check another OutputMetadata object for equality against this one."""
         # Unfortunately, GraphQL types don't have an equality operator defined,
         # and instead have this "is_same_type" function. Hence, we have to override equality here.
-        return self.type.is_same_type(other.type) and self.optional == other.optional
+        return is_equal_type(self.type, other.type) and self.optional == other.optional
 
     def __ne__(self, other):
         """Check another OutputMetadata object for non-equality against this one."""
@@ -649,11 +649,11 @@ def _compile_fragment_ast(schema, current_schema_type, ast, location, context):
     # No coercion is necessary if coercing to the current type of the scope,
     # or if the scope is of union type, to the base type of the union as defined by
     # the type_equivalence_hints compilation parameter.
-    is_same_type_as_scope = current_schema_type.is_same_type(coerces_to_type_obj)
+    is_same_type_as_scope = is_equal_type(current_schema_type, coerces_to_type_obj)
     equivalent_union_type = context['type_equivalence_hints'].get(coerces_to_type_obj, None)
     is_base_type_of_union = (
         isinstance(current_schema_type, GraphQLUnionType) and
-        current_schema_type.is_same_type(equivalent_union_type)
+        is_equal_type(current_schema_type, equivalent_union_type)
     )
 
     if not (is_same_type_as_scope or is_base_type_of_union):

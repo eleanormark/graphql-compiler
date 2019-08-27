@@ -4,6 +4,7 @@ from graphql.language.ast import (
     DocumentNode, InlineFragmentNode, ListTypeNode, NonNullTypeNode, OperationDefinitionNode
 )
 from graphql.language.parser import parse
+from graphql.utilities.type_comparators import is_equal_type
 
 from .exceptions import GraphQLParsingError
 from .schema import TYPENAME_META_FIELD_NAME

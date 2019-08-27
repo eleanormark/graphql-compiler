@@ -51,10 +51,10 @@ class CompilerEntity(object):
             return False
 
         # The args sometimes contain GraphQL type objects, which unfortunately do not define "==".
-        # We have to split them out and compare them using "is_same_type()" instead.
+        # We have to split them out and compare them using is_equal_type(, )" instead.
         for self_arg, other_arg in six.moves.zip(self._print_args, other._print_args):
             if is_type(self_arg):
-                if not self_arg.is_same_type(other_arg):
+                if not is_equal_type(self_arg, other_arg):
                     return False
             else:
                 if self_arg != other_arg:

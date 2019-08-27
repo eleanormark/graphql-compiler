@@ -165,10 +165,10 @@ class FoldedContextFieldBeforeFolding(Expression):
     def __eq__(self, other):
         """Return True if the given object is equal to this one, and False otherwise."""
         # Since this object has a GraphQL type as a variable, which doesn't implement
-        # the equality operator, we have to override equality and call is_same_type() here.
+        # the equality operator, we have to override equality and is_equal_type(call, ) here.
         return (type(self) == type(other) and
                 self.fold_scope_location == other.fold_scope_location and
-                self.field_type.is_same_type(other.field_type))
+                is_equal_type(self.field_type, other.field_type))
 
     def __ne__(self, other):
         """Check another object for non-equality against this one."""

@@ -187,7 +187,7 @@ class Variable(Expression):
 
         if isinstance(self.inferred_type, GraphQLList):
             inner_type = strip_non_null_from_type(self.inferred_type.of_type)
-            if GraphQLDate.is_same_type(inner_type) or GraphQLDateTime.is_same_type(inner_type):
+            if is_equal_type(GraphQLDate, inner_type) or is_equal_type(GraphQLDateTime, inner_type):
                 # This is a compilation error rather than a ValueError as
                 # it can be caused by an invalid GraphQL query on an otherwise valid schema.
                 # In other words, it's an error in writing the GraphQL query, rather than
@@ -210,9 +210,9 @@ class Variable(Expression):
         # http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
         # For the semantics of the date() OrientDB SQL function, see:
         # http://orientdb.com/docs/last/SQL-Functions.html#date
-        if GraphQLDate.is_same_type(self.inferred_type):
+        if is_equal_type(GraphQLDate, self.inferred_type):
             return u'date(%s, "%s")' % (match_variable_name, STANDARD_DATE_FORMAT)
-        elif GraphQLDateTime.is_same_type(self.inferred_type):
+        elif is_equal_type(GraphQLDateTime, self.inferred_type):
             return u'date(%s, "%s")' % (match_variable_name, STANDARD_DATETIME_FORMAT)
         else:
             return match_variable_name
@@ -224,9 +224,9 @@ class Variable(Expression):
         # We can't directly pass a Date or a DateTime object, so we have to pass it as a string
         # and then parse it inline. For date format parameter meanings, see:
         # http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-        if GraphQLDate.is_same_type(self.inferred_type):
+        if is_equal_type(GraphQLDate, self.inferred_type):
             return u'Date.parse("{}", {})'.format(STANDARD_DATE_FORMAT, self.variable_name)
-        elif GraphQLDateTime.is_same_type(self.inferred_type):
+        elif is_equal_type(GraphQLDateTime, self.inferred_type):
             return u'Date.parse("{}", {})'.format(STANDARD_DATETIME_FORMAT, self.variable_name)
         else:
             return six.text_type(self.variable_name)
@@ -261,10 +261,10 @@ class Variable(Expression):
     def __eq__(self, other):
         """Return True if the given object is equal to this one, and False otherwise."""
         # Since this object has a GraphQL type as a variable, which doesn't implement
-        # the equality operator, we have to override equality and call is_same_type() here.
+        # the equality operator, we have to override equality and is_equal_type(call, ) here.
         return (type(self) == type(other) and
                 self.variable_name == other.variable_name and
-                self.inferred_type.is_same_type(other.inferred_type))
+                is_equal_type(self.inferred_type, other.inferred_type))
 
     def __ne__(self, other):
         """Check another object for non-equality against this one."""
@@ -533,7 +533,7 @@ class OutputContextField(Expression):
         stripped_field_type = strip_non_null_from_type(self.field_type)
         if isinstance(stripped_field_type, GraphQLList):
             inner_type = strip_non_null_from_type(stripped_field_type.of_type)
-            if GraphQLDate.is_same_type(inner_type) or GraphQLDateTime.is_same_type(inner_type):
+            if is_equal_type(GraphQLDate, inner_type) or is_equal_type(GraphQLDateTime, inner_type):
                 # This is a compilation error rather than a ValueError as
                 # it can be caused by an invalid GraphQL query on an otherwise valid schema.
                 # In other words, it's an error in writing the GraphQL query, rather than
@@ -551,9 +551,9 @@ class OutputContextField(Expression):
         validate_safe_or_special_string(field_name)
 
         stripped_field_type = strip_non_null_from_type(self.field_type)
-        if GraphQLDate.is_same_type(stripped_field_type):
+        if is_equal_type(GraphQLDate, stripped_field_type):
             return u'%s.%s.format("%s")' % (mark_name, field_name, STANDARD_DATE_FORMAT)
-        elif GraphQLDateTime.is_same_type(stripped_field_type):
+        elif is_equal_type(GraphQLDateTime, stripped_field_type):
             return u'%s.%s.format("%s")' % (mark_name, field_name, STANDARD_DATETIME_FORMAT)
         else:
             return u'%s.%s' % (mark_name, field_name)
@@ -573,10 +573,10 @@ class OutputContextField(Expression):
 
         format_value = None
         stripped_field_type = strip_non_null_from_type(self.field_type)
-        if GraphQLDate.is_same_type(stripped_field_type):
+        if is_equal_type(GraphQLDate, stripped_field_type):
             template += '.format("{format}")'
             format_value = STANDARD_DATE_FORMAT
-        elif GraphQLDateTime.is_same_type(stripped_field_type):
+        elif is_equal_type(GraphQLDateTime, stripped_field_type):
             template += '.format("{format}")'
             format_value = STANDARD_DATETIME_FORMAT
 
@@ -609,10 +609,10 @@ class OutputContextField(Expression):
     def __eq__(self, other):
         """Return True if the given object is equal to this one, and False otherwise."""
         # Since this object has a GraphQL type as a variable, which doesn't implement
-        # the equality operator, we have to override equality and call is_same_type() here.
+        # the equality operator, we have to override equality and is_equal_type(call, ) here.
         return (type(self) == type(other) and
                 self.location == other.location and
-                self.field_type.is_same_type(other.field_type))
+                is_equal_type(self.field_type, other.field_type))
 
     def __ne__(self, other):
         """Check another object for non-equality against this one."""
@@ -652,7 +652,7 @@ class FoldedContextField(Expression):
                              .format(self.fold_scope_location))
 
         if self.fold_scope_location.field == COUNT_META_FIELD_NAME:
-            if not GraphQLInt.is_same_type(self.field_type):
+            if not is_equal_type(GraphQLInt, self.field_type):
                 raise TypeError(u'Expected the _x_count meta-field to be of GraphQLInt type, but '
                                 u'encountered type {} instead: {}'
                                 .format(self.field_type, self.fold_scope_location))
@@ -684,11 +684,11 @@ class FoldedContextField(Expression):
             template_data['field_name'] = 'size()'
         else:
             inner_type = strip_non_null_from_type(self.field_type.of_type)
-            if GraphQLDate.is_same_type(inner_type):
+            if is_equal_type(GraphQLDate, inner_type):
                 # Known OrientDB bug may cause trouble here, and incorrect data may be returned:
                 # https://github.com/orientechnologies/orientdb/issues/7289
                 template += '.format("' + STANDARD_DATE_FORMAT + '")'
-            elif GraphQLDateTime.is_same_type(inner_type):
+            elif is_equal_type(GraphQLDateTime, inner_type):
                 # Known OrientDB bug may cause trouble here, and incorrect data may be returned:
                 # https://github.com/orientechnologies/orientdb/issues/7289
                 template += '.format("' + STANDARD_DATETIME_FORMAT + '")'
@@ -725,10 +725,10 @@ class FoldedContextField(Expression):
     def __eq__(self, other):
         """Return True if the given object is equal to this one, and False otherwise."""
         # Since this object has a GraphQL type as a variable, which doesn't implement
-        # the equality operator, we have to override equality and call is_same_type() here.
+        # the equality operator, we have to override equality and is_equal_type(call, ) here.
         return (type(self) == type(other) and
                 self.fold_scope_location == other.fold_scope_location and
-                self.field_type.is_same_type(other.field_type))
+                is_equal_type(self.field_type, other.field_type))
 
     def __ne__(self, other):
         """Check another object for non-equality against this one."""

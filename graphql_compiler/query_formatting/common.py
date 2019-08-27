@@ -42,26 +42,26 @@ def validate_argument_type(name, expected_type, value):
         value: object that can be interpreted as being of that type
     """
     stripped_type = strip_non_null_from_type(expected_type)
-    if GraphQLString.is_same_type(stripped_type):
+    if is_equal_type(GraphQLString, stripped_type):
         if not isinstance(value, six.string_types):
             _raise_invalid_type_error(name, 'string', value)
-    elif GraphQLID.is_same_type(stripped_type):
+    elif is_equal_type(GraphQLID, stripped_type):
         # IDs can be strings or numbers, but the GraphQL library coerces them to strings.
         # We will follow suit and treat them as strings.
         if not isinstance(value, six.string_types):
             _raise_invalid_type_error(name, 'string', value)
-    elif GraphQLFloat.is_same_type(stripped_type):
+    elif is_equal_type(GraphQLFloat, stripped_type):
         if not isinstance(value, float):
             _raise_invalid_type_error(name, 'float', value)
-    elif GraphQLInt.is_same_type(stripped_type):
+    elif is_equal_type(GraphQLInt, stripped_type):
         # Special case: in Python, isinstance(True, int) returns True.
         # Safeguard against this with an explicit check against bool type.
         if isinstance(value, bool) or not isinstance(value, six.integer_types):
             _raise_invalid_type_error(name, 'int', value)
-    elif GraphQLBoolean.is_same_type(stripped_type):
+    elif is_equal_type(GraphQLBoolean, stripped_type):
         if not isinstance(value, bool):
             _raise_invalid_type_error(name, 'bool', value)
-    elif GraphQLDecimal.is_same_type(stripped_type):
+    elif is_equal_type(GraphQLDecimal, stripped_type):
         # Types we support are int, float, and Decimal, but not bool.
         # isinstance(True, int) returns True, so we explicitly forbid bool.
         if isinstance(value, bool):
@@ -71,7 +71,7 @@ def validate_argument_type(name, expected_type, value):
                 decimal.Decimal(value)
             except decimal.InvalidOperation as e:
                 raise GraphQLInvalidArgumentError(e)
-    elif GraphQLDate.is_same_type(stripped_type):
+    elif is_equal_type(GraphQLDate, stripped_type):
         # Datetimes pass as instances of date. We want to explicitly only allow dates.
         if isinstance(value, datetime.datetime) or not isinstance(value, datetime.date):
             _raise_invalid_type_error(name, 'date', value)
@@ -79,7 +79,7 @@ def validate_argument_type(name, expected_type, value):
             stripped_type.serialize(value)
         except ValueError as e:
             raise GraphQLInvalidArgumentError(e)
-    elif GraphQLDateTime.is_same_type(stripped_type):
+    elif is_equal_type(GraphQLDateTime, stripped_type):
         if not isinstance(value, (datetime.date, arrow.Arrow)):
             _raise_invalid_type_error(name, 'datetime', value)
         try:

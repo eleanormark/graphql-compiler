@@ -302,7 +302,7 @@ class GraphqlSchemaGenerationTests(unittest.TestCase):
         ]
         schema_graph = get_orientdb_schema_graph(schema_data, [])
         name_property = schema_graph.get_element_by_class_name('Entity').properties['name']
-        self.assertTrue(name_property.type.is_same_type(GraphQLString))
+        is_equal_type(self.assertTrue(name_property.type, GraphQLString))
 
     def test_native_orientdb_collection_property(self):
         schema_data = [
@@ -312,7 +312,7 @@ class GraphqlSchemaGenerationTests(unittest.TestCase):
         ]
         schema_graph = get_orientdb_schema_graph(schema_data, [])
         alias_property = schema_graph.get_element_by_class_name('Person').properties['alias']
-        self.assertTrue(alias_property.type.is_same_type(GraphQLList(GraphQLString)))
+        is_equal_type(self.assertTrue(alias_property.type, GraphQLList(GraphQLString)))
         self.assertEqual(alias_property.default, set())
 
     def test_class_collection_property(self):
@@ -324,7 +324,7 @@ class GraphqlSchemaGenerationTests(unittest.TestCase):
         schema_graph = get_orientdb_schema_graph(schema_data, [])
         friends_property = schema_graph.get_element_by_class_name('DataPoint').properties[
             'data_source']
-        self.assertTrue(friends_property.type.is_same_type(
+        is_equal_type(self.assertTrue(friends_property.type,
             GraphQLList(GraphQLObjectType('ExternalSource', {}))))
         self.assertEqual(friends_property.default, list())
 
@@ -387,14 +387,14 @@ class GraphqlSchemaGenerationTests(unittest.TestCase):
         self.assertEqual(set(person_baby_union.types), {baby, person})
 
         # Assert that arbitrarily chosen inherited property is still correctly inherited
-        self.assertTrue(baby.fields['name'].type.is_same_type(GraphQLString))
+        is_equal_type(self.assertTrue(baby.fields['name'].type, GraphQLString))
 
         # Assert that arbitrarily chosen edge is correctly represented on all ends
         location_list_type = GraphQLList(location)
         union_list_type = GraphQLList(person_baby_union)
-        self.assertTrue(person.fields['out_Person_LivesIn'].type.is_same_type(location_list_type))
-        self.assertTrue(baby.fields['out_Person_LivesIn'].type.is_same_type(location_list_type))
-        self.assertTrue(location.fields['in_Person_LivesIn'].type.is_same_type(union_list_type))
+        is_equal_type(self.assertTrue(person.fields['out_Person_LivesIn'].type, location_list_type))
+        is_equal_type(self.assertTrue(baby.fields['out_Person_LivesIn'].type, location_list_type))
+        is_equal_type(self.assertTrue(location.fields['in_Person_LivesIn'].type, union_list_type))
 
     def test_filter_type_equivalences_with_no_edges(self):
         schema_data = [

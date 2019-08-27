@@ -75,7 +75,7 @@ class SafeMatchFormattingTests(unittest.TestCase):
     def test_incorrect_graphql_type_causes_errors(self):
         for correct_graphql_type, value in six.iteritems(REPRESENTATIVE_DATA_FOR_EACH_TYPE):
             for other_graphql_type in six.iterkeys(REPRESENTATIVE_DATA_FOR_EACH_TYPE):
-                if correct_graphql_type.is_same_type(other_graphql_type):
+                if is_equal_type(correct_graphql_type, other_graphql_type):
                     # No error -- GraphQL type is correct.
                     _safe_match_argument(correct_graphql_type, value)
                 else:
@@ -131,7 +131,7 @@ class SafeGremlinFormattingTests(unittest.TestCase):
     def test_incorrect_graphql_type_causes_errors(self):
         for correct_graphql_type, value in six.iteritems(REPRESENTATIVE_DATA_FOR_EACH_TYPE):
             for other_graphql_type in six.iterkeys(REPRESENTATIVE_DATA_FOR_EACH_TYPE):
-                if correct_graphql_type.is_same_type(other_graphql_type):
+                if is_equal_type(correct_graphql_type, other_graphql_type):
                     # No error -- GraphQL type is correct.
                     _safe_gremlin_argument(correct_graphql_type, value)
                 else:
