@@ -1837,7 +1837,7 @@ for configuring and running SQLAlchemy in a production system.
     from graphql.utils.build_ast_schema import build_ast_schema
     from sqlalchemy import MetaData, Table, Column, String, create_engine
     from graphql_compiler.compiler.ir_lowering_sql.metadata import SqlMetadata
-    from graphql_compiler.schema.schema_info import make_sqlalchemy_schema_info
+    from graphql_compiler.schema.schema_info import SQLAlchemySchemaInfo
     from graphql_compiler import graphql_to_sql
 
     # =================================================================================================
@@ -1877,7 +1877,7 @@ for configuring and running SQLAlchemy in a production system.
     engine = create_engine('<connection string>')
 
     # Wrap the schema information into a SQLAlchemySchemaInfo object
-    sql_schema_info = make_sqlalchemy_schema_info(schema, {}, engine.dialect, vertex_name_to_table, {})
+    sql_schema_info = SQLAlchemySchemaInfo(schema, {}, engine.dialect, vertex_name_to_table, {})
 
 
     # =================================================================================================

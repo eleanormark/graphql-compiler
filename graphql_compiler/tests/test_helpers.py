@@ -17,7 +17,9 @@ from ..compiler.subclass import compute_subclass_sets
 from ..debugging_utils import pretty_print_gremlin, pretty_print_match
 from ..query_formatting.graphql_formatting import pretty_print_graphql
 from ..schema import CUSTOM_SCALAR_TYPES, is_vertex_field_name
-from ..schema.schema_info import CommonSchemaInfo, DirectJoinDescriptor, make_sqlalchemy_schema_info
+from ..schema.schema_info import (
+    CommonSchemaInfo, DirectJoinDescriptor, SQLAlchemySchemaInfo, validate_sqlalchemy_schema_info
+)
 from ..schema_generation.orientdb.schema_graph_builder import get_orientdb_schema_graph
 from ..schema_generation.orientdb.utils import (
     ORIENTDB_INDEX_RECORDS_QUERY, ORIENTDB_SCHEMA_RECORDS_QUERY
@@ -557,8 +559,10 @@ def get_sqlalchemy_schema_info():
             for edge_name, join_info in six.iteritems(join_descriptors.get(class_name, {})):
                 join_descriptors.setdefault(subclass, {})[edge_name] = join_info
 
-    return make_sqlalchemy_schema_info(
+    sqlalchemy_schema_info = SQLAlchemySchemaInfo(
         schema, type_equivalence_hints, mssql.dialect(), tables, join_descriptors)
+    validate_sqlalchemy_schema_info(sqlalchemy_schema_info)
+    return sqlalchemy_schema_info
 
 
 def generate_schema_graph(orientdb_client):
