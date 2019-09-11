@@ -91,6 +91,7 @@ from .helpers import (
 )
 from .metadata import LocationInfo, OutputInfo, QueryMetadataTable, RecurseInfo, TagInfo
 from .validation import validate_schema_and_query_ast
+from graphql.utilities.type_comparators import is_equal_type
 
 
 # LocationStackEntry contains the following:

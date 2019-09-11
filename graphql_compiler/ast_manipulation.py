@@ -68,11 +68,7 @@ def get_only_query_definition(document_ast, desired_error_type):
             u'{}'.format(document_ast.definitions))
 
     definition_ast = document_ast.definitions[0]
-    if definition_ast.operation != 'query':
-        raise desired_error_type(
-            u'Expected a GraphQL document with a single query definition, but instead found a '
-            u'but instead found a "{}" operation. This is not supported.'
-            .format(definition_ast.operation))
+
 
     return definition_ast
 

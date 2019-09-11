@@ -14,6 +14,7 @@ from .helpers import (
     ensure_unicode_string, is_graphql_type, safe_or_special_quoted_string, strip_non_null_from_type,
     validate_safe_or_special_string, validate_safe_string
 )
+from graphql.utilities.type_comparators import is_equal_type
 
 
 # Since MATCH uses $-prefixed keywords to indicate special values,

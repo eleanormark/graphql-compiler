@@ -14,6 +14,7 @@ from .helpers import (
     validate_tagged_argument_name
 )
 from .metadata import FilterInfo
+from graphql.utilities.type_comparators import is_equal_type
 
 
 def scalar_leaf_only(operator):

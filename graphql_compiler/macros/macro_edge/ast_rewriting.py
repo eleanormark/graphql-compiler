@@ -4,8 +4,8 @@ from copy import copy
 from itertools import chain
 
 from graphql.language.ast import (
-    Argument, Field, InlineFragment, ListValue, Name, OperationDefinition, SelectionSet,
-    StringValue
+    ArgumentNode, FieldNode, InlineFragmentNode, ListValueNode, NameNode, OperationDefinitionNode, SelectionSetNode,
+    StringValueNode
 )
 import six
 
@@ -39,7 +39,7 @@ def _replace_tag_names_in_tag_directive(name_change_map, tag_directive):
         return tag_directive
 
     renamed_tag_directive = copy(tag_directive)
-    renamed_tag_directive.arguments = [Argument(Name('tag_name'), StringValue(new_name))]
+    renamed_tag_directive.arguments = [ArgumentNode(NameNode('tag_name'), StringValueNode(new_name))]
     return renamed_tag_directive
 
 
@@ -76,12 +76,12 @@ def _replace_tag_names_in_filter_directive(name_change_map, filter_directive):
                     new_name = name_change_map[current_name]
                     if new_name != current_name:
                         made_changes = True
-                        new_value = StringValue('%' + new_name)
+                        new_value = StringValueNode('%' + new_name)
 
                 new_value_list.append(new_value)
 
             if made_changes:
-                new_argument = Argument(Name('value'), value=ListValue(new_value_list))
+                new_argument = ArgumentNode(NameNode('value'), value=ListValueNode(new_value_list))
             else:
                 new_argument = argument
             new_arguments.append(new_argument)
@@ -146,7 +146,7 @@ def replace_tag_names(name_change_map, ast):
 
     Args:
         name_change_map: Dict[str, str] mapping all tag names in the ast to new names
-        ast: GraphQL library AST object, such as a Field, InlineFragment, or OperationDefinition
+        ast: GraphQL library AST object, such as a FieldNode, InlineFragmentNode, or OperationDefinitionNode
              This ast is not mutated.
 
     Returns:
@@ -154,7 +154,7 @@ def replace_tag_names(name_change_map, ast):
         according to the name_change_map. If no changes were made, this is the same object
         as the input.
     """
-    if not isinstance(ast, (Field, InlineFragment, OperationDefinition)):
+    if not isinstance(ast, (FieldNode, InlineFragmentNode, OperationDefinitionNode)):
         return ast
 
     made_changes = False
@@ -172,7 +172,7 @@ def replace_tag_names(name_change_map, ast):
                 made_changes = True
 
             new_selections.append(new_selection_ast)
-        new_selection_set = SelectionSet(new_selections)
+        new_selection_set = SelectionSetNode(new_selections)
 
     # Process the current node's directives.
     directives = ast.directives
@@ -193,7 +193,7 @@ def remove_directives_from_ast(ast, directive_names_to_omit):
     """Return an equivalent AST to the input, but with instances of the named directives omitted.
 
     Args:
-        ast: GraphQL library AST object, such as a Field, InlineFragment, or OperationDefinition
+        ast: GraphQL library AST object, such as a FieldNode, InlineFragmentNode, or OperationDefinitionNode
         directive_names_to_omit: set of strings describing the names of the directives to omit
 
     Returns:
@@ -201,7 +201,7 @@ def remove_directives_from_ast(ast, directive_names_to_omit):
         the named directives omitted. If the specified directives do not appear in the input AST,
         the returned object is the exact same object as the input.
     """
-    if not isinstance(ast, (Field, InlineFragment, OperationDefinition)):
+    if not isinstance(ast, (FieldNode, InlineFragmentNode, OperationDefinitionNode)):
         return ast
 
     made_changes = False
@@ -218,7 +218,7 @@ def remove_directives_from_ast(ast, directive_names_to_omit):
                 made_changes = True
 
             new_selections.append(new_selection_ast)
-        new_selection_set = SelectionSet(new_selections)
+        new_selection_set = SelectionSetNode(new_selections)
 
     directives_to_keep = [
         directive
@@ -269,7 +269,7 @@ def find_target_and_copy_path_to_it(ast):
     # Recurse
     new_selections = []
     target_ast = None
-    if isinstance(ast, (Field, InlineFragment, OperationDefinition)):
+    if isinstance(ast, (FieldNode, InlineFragmentNode, OperationDefinitionNode)):
         if ast.selection_set is not None:
             for selection in ast.selection_set.selections:
                 new_selection, possible_target_ast = find_target_and_copy_path_to_it(selection)
@@ -283,7 +283,7 @@ def find_target_and_copy_path_to_it(ast):
         return ast, None
     else:
         new_ast = copy(ast)
-        new_ast.selection_set = SelectionSet(new_selections)
+        new_ast.selection_set = SelectionSetNode(new_selections)
         return new_ast, target_ast
 
 
@@ -294,20 +294,20 @@ def merge_selection_sets(selection_set_a, selection_set_b):
     collision on a property field, we take the directives from both inputs on that field and
     merge them. We disallow name collision on a vertex field.
 
-    The value None represents an empty SelectionSet.
+    The value None represents an empty SelectionSetNode.
 
-    The order of selections in the resulting SelectionSet has the following properties:
+    The order of selections in the resulting SelectionSetNode has the following properties:
     - property fields are before vertex fields.
     - property fields in selection_set_b come later than other property fields.
     - vertex fields in selection_set_b come later than other vertex fields.
     - ties are resolved by respecting the ordering of fields in the input arguments.
 
     Args:
-        selection_set_a: SelectionSet or None to be merged with the other
-        selection_set_b: SelectionSet or None to be merged with the other
+        selection_set_a: SelectionSetNode or None to be merged with the other
+        selection_set_b: SelectionSetNode or None to be merged with the other
 
     Returns:
-        SelectionSet or None with contents from both input selection sets
+        SelectionSetNode or None with contents from both input selection sets
     """
     if selection_set_a is None:
         return selection_set_b
@@ -387,7 +387,7 @@ def merge_selection_sets(selection_set_a, selection_set_b):
         for name in selection_name_order
         if name in merged_selection_dict
     ]
-    return SelectionSet(sorted(
+    return SelectionSetNode(sorted(
         merged_selections,
         key=lambda ast: ast.selection_set is not None
     ))

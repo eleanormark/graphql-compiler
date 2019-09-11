@@ -24,6 +24,7 @@ from ..schema_generation.orientdb.utils import (
     ORIENTDB_INDEX_RECORDS_QUERY, ORIENTDB_SCHEMA_RECORDS_QUERY
 )
 from ..schema_generation.utils import amend_custom_scalar_types
+from graphql.utilities.type_comparators import is_equal_type
 
 
 # The strings which we will be comparing have newlines and spaces we'd like to get rid of,
@@ -419,7 +420,7 @@ def compare_input_metadata(test_case, expected, received):
         expected_value = expected[key]
         received_value = received[key]
 
-        is_equal_type(test_case.assertTrue(expected_value, received_value),
+        test_case.assertTrue(is_equal_type(expected_value, received_value),
                              msg=u'{} != {}'.format(str(expected_value), str(received_value)))
 
 

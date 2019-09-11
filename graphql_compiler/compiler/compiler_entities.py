@@ -2,7 +2,7 @@
 """Base classes for compiler entity objects like basic blocks and expressions."""
 
 from abc import ABCMeta, abstractmethod
-
+from graphql.utilities.type_comparators import is_equal_type
 from graphql import is_type
 import six
 

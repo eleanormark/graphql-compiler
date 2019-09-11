@@ -25,7 +25,7 @@ MacroEdgeDefinitionDirective = GraphQLDirective(
     name='macro_edge_definition',
     args=OrderedDict([
         ('name', GraphQLArgument(
-            type=GraphQLNonNull(GraphQLString),
+            type_=GraphQLNonNull(GraphQLString),
             description='Name of the filter operation to perform.',
         )),
     ]),

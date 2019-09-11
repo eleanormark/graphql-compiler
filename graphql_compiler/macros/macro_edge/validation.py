@@ -2,8 +2,8 @@
 from copy import copy
 
 from graphql.language.ast import (
-    Argument, Directive, Document, Field, InlineFragment, Name, OperationDefinition, SelectionSet,
-    StringValue
+    ArgumentNode, DirectiveNode, DocumentNode, FieldNode, InlineFragmentNode, NameNode,
+    OperationDefinitionNode, SelectionSetNode, StringValueNode
 )
 from graphql.validation import validate
 
@@ -100,12 +100,12 @@ def _validate_non_required_macro_definition_directives(ast, inside_fold_scope=Fa
             # checks that the macro is not on a union type, because union types always
             # start with a coercion.
             for selection in ast.selection_set.selections:
-                if isinstance(selection, InlineFragment):
+                if isinstance(selection, InlineFragmentNode):
                     raise GraphQLInvalidMacroError(u'The @macro_edge_target cannot begin directly'
                                                    u'with a coercion. Please put the directive on'
                                                    u'the coercion block itself.')
 
-    if isinstance(ast, (Field, InlineFragment, OperationDefinition)):
+    if isinstance(ast, (FieldNode, InlineFragmentNode, OperationDefinitionNode)):
         if ast.selection_set is not None:
             for selection in ast.selection_set.selections:
                 _validate_non_required_macro_definition_directives(
@@ -219,8 +219,8 @@ def _get_minimal_query_ast_from_macro_ast(macro_ast):
     })
 
     # We will add this output directive to make the ast a valid query
-    output_directive = Directive(Name('output'), arguments=[
-        Argument(Name('out_name'), StringValue('dummy_output_name'))
+    output_directive = DirectiveNode(NameNode('output'), arguments=[
+        ArgumentNode(NameNode('out_name'), StringValueNode('dummy_output_name'))
     ])
 
     # Shallow copy everything on the path to the first level selection list
@@ -231,7 +231,7 @@ def _get_minimal_query_ast_from_macro_ast(macro_ast):
     # Add an output to a new or existing __typename field
     existing_typename_field = None
     for idx, selection in enumerate(first_level_selections):
-        if isinstance(selection, Field):
+        if isinstance(selection, FieldNode):
             if selection.name.value == '__typename':
                 # We have a copy of the list, but the elements are references to objects
                 # in macro_ast that we don't want to mutate. So the following copy is necessary.
@@ -240,12 +240,12 @@ def _get_minimal_query_ast_from_macro_ast(macro_ast):
                 existing_typename_field.directives.append(output_directive)
                 first_level_selections[idx] = existing_typename_field
     if existing_typename_field is None:
-        first_level_selections.insert(0, Field(Name('__typename'), directives=[output_directive]))
+        first_level_selections.insert(0, FieldNode(NameNode('__typename'), directives=[output_directive]))
 
     # Propagate the changes back to the result_ast
-    root_level_selection.selection_set = SelectionSet(first_level_selections)
-    query_ast.selection_set = SelectionSet([root_level_selection])
-    return Document([query_ast])
+    root_level_selection.selection_set = SelectionSetNode(first_level_selections)
+    query_ast.selection_set = SelectionSetNode([root_level_selection])
+    return DocumentNode([query_ast])
 
 
 # ############

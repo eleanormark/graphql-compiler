@@ -15,6 +15,7 @@ from .cypher_formatting import insert_arguments_into_cypher_query_redisgraph
 from .gremlin_formatting import insert_arguments_into_gremlin_query
 from .match_formatting import insert_arguments_into_match_query
 from .sql_formatting import insert_arguments_into_sql_query
+from graphql.utilities.type_comparators import is_equal_type
 
 
 ######

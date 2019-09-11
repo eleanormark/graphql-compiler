@@ -13,7 +13,6 @@ import six
 from ..exceptions import GraphQLCompilationError
 from ..schema import INBOUND_EDGE_FIELD_PREFIX, OUTBOUND_EDGE_FIELD_PREFIX, is_vertex_field_name
 
-
 # These are the Java (OrientDB) representations of the ISO-8601 standard date and datetime formats.
 STANDARD_DATE_FORMAT = 'yyyy-MM-dd'
 STANDARD_DATETIME_FORMAT = 'yyyy-MM-dd\'T\'HH:mm:ssX'

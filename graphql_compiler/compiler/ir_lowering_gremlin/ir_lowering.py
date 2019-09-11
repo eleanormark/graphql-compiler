@@ -25,7 +25,7 @@ from ..helpers import (
     get_only_element_from_collection, strip_non_null_from_type, validate_safe_string
 )
 from ..ir_lowering_common.common import extract_folds_from_ir_blocks
-
+from graphql.utilities.type_comparators import is_equal_type
 
 ##################################
 # Optimization / lowering passes #

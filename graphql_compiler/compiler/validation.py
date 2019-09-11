@@ -63,7 +63,7 @@ def validate_schema_and_query_ast(schema, query_ast):
             frozenset(directive.locations),
             frozenset(six.viewkeys(directive.args))
         ])
-        for directive in schema.get_directives()
+        for directive in schema.directives
     }
 
     # Directives missing from the actual directives provided.
@@ -84,9 +84,5 @@ def validate_schema_and_query_ast(schema, query_ast):
         unsupported_default_directives -
         supported_default_directive
     )
-    if extra_directives:
-        extra_message = (u'The following directives were supplied in the given schema, but are not '
-                         u'not supported by the GraphQL compiler: {}'.format(extra_directives))
-        core_graphql_errors.append(extra_message)
 
     return core_graphql_errors
