@@ -553,7 +553,7 @@ whose names contain the substring :code:`substr`:
     {
         Animal {
             name @output(out_name: "animal_name")
-            out_Animal_ParentOf {
+            out_Animal_ParentOf @fold {
                 _x_count @filter(op_name: ">=", value: ["$count"])
                 name @filter(op_name: "has_substring", value: ["$substr"])
             }
@@ -1815,8 +1815,8 @@ the target database.
 Our SQL backend supports basic traversals, filters, tags and outputs, but there are still some
 pieces in development:
 
-- Directives: :code:`@optional`, :code:`@fold`, :code:`@recurse`
-- Filter operators: :code:`is_null`, :code:`is_not_null`, :code:`has_edge_degree`
+- Directives: :code:`@fold`
+- Filter operators: :code:`has_edge_degree`
 - Dialect-specific features, like Postgres array types, and use of filter operators
   specific to them: :code:`contains`, :code:`intersects`, :code:`name_or_alias`
 - Meta fields: :code:`__typename`, :code:`_x_count`
@@ -1864,7 +1864,7 @@ for configuring and running SQLAlchemy in a production system.
 
     # Map all GraphQL types to sqlalchemy tables.
     # See https://docs.sqlalchemy.org/en/latest/core/metadata.html for more details on this step.
-    tables = {
+    vertex_name_to_table = {
         'Animal': Table(
             'Animal',
             MetaData(),
@@ -1877,7 +1877,7 @@ for configuring and running SQLAlchemy in a production system.
     engine = create_engine('<connection string>')
 
     # Wrap the schema information into a SQLAlchemySchemaInfo object
-    sql_schema_info = make_sqlalchemy_schema_info(schema, {}, engine.dialect, tables, {})
+    sql_schema_info = make_sqlalchemy_schema_info(schema, {}, engine.dialect, vertex_name_to_table, {})
 
 
     # =================================================================================================
